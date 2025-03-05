@@ -1,0 +1,27 @@
+-- Jump Height Benchmark (force_plate_data_t)
+SELECT 
+    playername,
+    AVG(cmjheight) AS jump_benchmark,
+    COUNT(*) AS jump_measurements
+FROM 
+    force_plate_data_t
+WHERE 
+    cmjheight IS NOT NULL
+GROUP BY 
+    playername
+HAVING 
+    COUNT(*) > 10; -- Ensure enough data for a reliable benchmark
+
+-- Pitch Velocity Benchmark (rapsodo_pitches_t2)
+SELECT 
+    name,
+    AVG(velocity) AS velocity_benchmark,
+    COUNT(*) AS pitch_count
+FROM 
+    rapsodo_pitches_t2
+WHERE 
+    velocity IS NOT NULL
+GROUP BY 
+    name
+HAVING 
+    COUNT(*) > 50; -- More pitches, so a higher threshold
