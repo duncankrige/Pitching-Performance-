@@ -1,0 +1,83 @@
+Benchmark ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+```{r}
+# Load libraries
+library(ggplot2)
+library(dplyr)
+
+# Read the CSV
+data <- read.csv("/Users/duncankrige/Documents/LPC(BASEBALL)/Correlation  Results /fatigue_summary.csv")
+
+# Check the data (optional)
+print(data)
+
+# 1. Bar Plot: Counts of each category
+counts <- c(data$total_pairs, data$jump_below_count, data$velocity_below_count, 
+            data$both_below_count, data$jump_below_velocity_ok, data$jump_ok_velocity_below)
+categories <- c("Total Pairs", "Jump Below", "Velocity Below", "Both Below", 
+                "Jump Below, Velocity OK", "Jump OK, Velocity Below")
+
+bar_data <- data.frame(Category = categories, Count = counts)
+
+ggplot(bar_data, aes(x = Category, y = Count, fill = Category)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = Count), vjust = -0.5) +  # Add counts on top
+  labs(title = "Fatigue and Velocity Summary", 
+       x = "Category", y = "Number of Occurrences") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_brewer(palette = "Set3")
+
+# Save the plot
+ggsave("fatigue_bar_plot.png", width = 8, height = 6)
+
+# 2. Pie Chart: Proportions of key outcomes when jump is below benchmark
+pie_data <- data.frame(
+  Outcome = c("Both Below (Fatigue + Slow)", "Jump Below, Velocity OK"),
+  Count = c(data$both_below_count, data$jump_below_velocity_ok)
+)
+pie_data <- pie_data %>% 
+  mutate(Proportion = Count / sum(Count) * 100)
+
+ggplot(pie_data, aes(x = "", y = Proportion, fill = Outcome)) +
+  geom_bar(stat = "identity", width = 1) +
+  coord_polar("y", start = 0) +
+  geom_text(aes(label = paste0(round(Proportion, 1), "%")), 
+            position = position_stack(vjust = 0.5)) +
+  labs(title = "When Jump Height is Below Benchmark", fill = "Outcome") +
+  theme_void() +
+  scale_fill_manual(values = c("#FF9999", "#66CCCC"))
+
+ggsave("fatigue_pie_chart.png", width = 6, height = 6)
+
+# 3. Stacked Bar: Contingency visualization
+contingency_data <- data.frame(
+  Jump = c("Below", "Below", "Above", "Above"),
+  Velocity = c("Below", "Above", "Below", "Above"),
+  Count = c(data$both_below_count, data$jump_below_velocity_ok, 
+            data$jump_ok_velocity_below, data$total_pairs - (data$both_below_count + data$jump_below_velocity_ok + data$jump_ok_velocity_below))
+)
+
+ggplot(contingency_data, aes(x = Jump, y = Count, fill = Velocity)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = Count), position = position_stack(vjust = 0.5)) +
+  labs(title = "Jump Height vs. Pitch Velocity", 
+       x = "Jump Height Status", y = "Count", fill = "Velocity Status") +
+  theme_minimal() +
+  scale_fill_manual(values = c("#FF6666", "#66CC66"))
+
+ggsave("fatigue_stacked_bar.png", width = 6, height = 6)
+```
+
+
+fatigue_by_player --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+```{r}
+library(ggplot2)
+data <- read.csv("/Users/duncankrige/Documents/LPC(BASEBALL)/Correlation  Results /fatigue_by_player.csv.csv")
+ggplot(data, aes(x = playername, y = both_below_rate, fill = playername)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = round(both_below_rate, 2)), vjust = -0.5) +
+  labs(title = "Fatigue Impact on Pitch Velocity by Player", x = "Player", y = "Both Below Rate") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+ggsave("fatigue_by_player.png", width = 8, height = 6)
+```
