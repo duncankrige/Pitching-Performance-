@@ -1,0 +1,36 @@
+total_pairs | jump_below_count | velocity_below_count | both_below_count | jump_below_velocity_ok | jump_ok_velocity_below
+------------+------------------+---------------------+-----------------+-----------------------+------------------------
+3267        | 1093             | 1758                | 619             | 474                   | 1139
+
+
+total_pairs (3,267): All valid jump height and pitch velocity pairs within the 7-day window for the 20 players common to both datasets.
+jump_below_count (1,093): Times jump height (cmjheight) was below the player’s benchmark.
+velocity_below_count (1,758): Times pitch velocity (velocity) was below the player’s benchmark.
+both_below_count (619): Times both jump height AND velocity were below their benchmarks (your fatigue signal).
+jump_below_velocity_ok (474): Times jump height was below benchmark, but velocity was at or above (fatigue but no speed drop).
+jump_ok_velocity_below (1,139): Times jump height was at or above benchmark, but velocity was below (speed drop without fatigue).
+
+
+Jump Below Benchmark Rate:
+1,093 / 3,267 = 33.5% of pairs had a below-benchmark jump height.
+
+Velocity Below Benchmark Rate:
+1,758 / 3,267 = 53.8% of pairs had a below-benchmark velocity.
+
+Both Below Rate:
+619 / 3,267 = 18.9% of pairs had both below benchmark.
+
+Conditional Probability (Key Question):
+Of the 1,093 times jump height was below benchmark, how often was velocity also below?
+619 / 1,093 = 56.6%.Compare to overall velocity below rate (53.8%)—a slight increase (2.8% higher).
+
+
+Interpretation
+Weak Link: When jump height is below benchmark, velocity is below benchmark 56.6% of the time—only marginally higher than the overall 53.8%. This suggests a weak connection between fatigue (low jump) and slower pitches across all players.
+Mismatch Cases:
+474 cases (14.5% of total): Jump below, velocity fine—fatigue might not always slow pitches (e.g., adrenaline or mechanics compensate).
+1,139 cases (34.9% of total): Jump fine, velocity below—other factors (e.g., arm fatigue, pitch type) often reduce speed without jump height dropping.
+Why Weak?:
+7-day window might dilute daily fatigue effects.
+Aggregating 20 players could hide individual trends (like we saw with correlations).
+Velocity varies naturally (e.g., pitch type, game context) beyond fatigue.
