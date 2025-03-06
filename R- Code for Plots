@@ -81,3 +81,81 @@ ggplot(data, aes(x = playername, y = both_below_rate, fill = playername)) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1))
 ggsave("fatigue_by_player.png", width = 8, height = 6)
 ```
+
+Stacked Bar Plot: Jump and Velocity Below Counts ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+```{r}
+install.packages(c("dplyr", "reshape2"))
+library(ggplot2)
+library(dplyr)
+
+# Load data
+data <- read.csv("/Users/duncankrige/Documents/LPC(BASEBALL)/Correlation  Results /fatigue_by_player.csv.csv")
+
+# Reshape for stacking
+stacked_data <- data %>%
+  select(playername, jump_below_count, velocity_below_count, both_below_count) %>%
+  pivot_longer(cols = c(jump_below_count, velocity_below_count, both_below_count), 
+               names_to = "Metric", values_to = "Count")
+
+# Plot
+ggplot(stacked_data, aes(x = playername, y = Count, fill = Metric)) +
+  geom_bar(stat = "identity", position = "stack") +
+  geom_text(aes(label = Count), position = position_stack(vjust = 0.5), size = 3) +
+  labs(title = "Jump and Velocity Below Benchmark by Player", 
+       x = "Player", y = "Count", fill = "Metric") +
+  scale_fill_manual(values = c("#FF9999", "#66CCCC", "#FFCC66"), 
+                    labels = c("Jump Below", "Velocity Below", "Both Below")) +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Save
+ggsave("fatigue_stacked_bar_by_player.png", width = 10, height = 6)
+```
+
+Heatmap: Fatigue Correlation Matrix ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+```{r}
+library(ggplot2)
+library(reshape2)
+
+# Load data
+data <- read.csv("/Users/duncankrige/Documents/LPC(BASEBALL)/Correlation  Results /fatigue_by_player.csv.csv")
+
+# Select key columns
+heat_data <- data %>% select(playername, total_pairs, both_below_count, both_below_rate)
+
+# Melt for heatmap
+melted_data <- melt(heat_data, id.vars = "playername")
+
+# Plot
+ggplot(melted_data, aes(x = variable, y = playername, fill = value)) +
+  geom_tile() +
+  geom_text(aes(label = round(value, 2)), color = "black", size = 3) +
+  scale_fill_gradient(low = "#FFFFCC", high = "#FF6666") +
+  labs(title = "Fatigue Metrics Heatmap by Player", x = "Metric", y = "Player", fill = "Value") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+# Save
+ggsave("fatigue_heatmap_by_player.png", width = 8, height = 8)
+```
+
+Scatter Plot: Total Pairs vs. Both Below Rate ---------------------------------------------------------------------------------------------------------------------------------------------------------------
+```{r}
+library(ggplot2)
+
+# Load data
+data <- read.csv("/Users/duncankrige/Documents/LPC(BASEBALL)/Correlation  Results /fatigue_by_player.csv.csv")
+
+# Plot
+ggplot(data, aes(x = total_pairs, y = both_below_rate, size = both_below_count, color = playername)) +
+  geom_point(alpha = 0.7) +
+  geom_text(aes(label = playername), vjust = -1, size = 3) +
+  labs(title = "Fatigue Impact vs. Sample Size by Player", 
+       x = "Total Pairs", y = "Both Below Rate", size = "Both Below Count", color = "Player") +
+  theme_minimal() +
+  scale_size_continuous(range = c(3, 10)) +
+  scale_color_brewer(palette = "Paired")
+
+# Save
+ggsave("fatigue_scatter_by_player.png", width = 10, height = 6)
+```
