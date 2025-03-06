@@ -1,3 +1,7 @@
+Since the overall link is weakfor the benchmark averages, I wanted test it by player to see if some show a stronger fatigue signal. 
+
+
+
 WITH benchmarks AS (
     SELECT 
         playername AS name,
