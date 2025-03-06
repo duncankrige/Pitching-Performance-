@@ -1,0 +1,65 @@
+WITH benchmarks AS (
+    SELECT 
+        playername AS name,
+        AVG(cmjheight) AS jump_benchmark
+    FROM 
+        force_plate_data_t
+    WHERE 
+        cmjheight IS NOT NULL
+    GROUP BY 
+        playername
+    HAVING 
+        COUNT(*) > 10
+), velocity_benchmarks AS (
+    SELECT 
+        name,
+        AVG(velocity) AS velocity_benchmark
+    FROM 
+        rapsodo_pitches_t2
+    WHERE 
+        velocity IS NOT NULL
+    GROUP BY 
+        name
+    HAVING 
+        COUNT(*) > 50
+), joined_data AS (
+    SELECT 
+        f.playername,
+        f.cmjheight,
+        r.velocity,
+        b.jump_benchmark,
+        vb.velocity_benchmark,
+        CASE WHEN f.cmjheight < b.jump_benchmark THEN 1 ELSE 0 END AS below_jump,
+        CASE WHEN r.velocity < vb.velocity_benchmark THEN 1 ELSE 0 END AS below_velocity
+    FROM 
+        force_plate_data_t f
+    JOIN 
+        rapsodo_pitches_t2 r
+    ON 
+        f.playername = r.name 
+        AND f.date BETWEEN DATE(r.datetime) - INTERVAL '3 days' AND DATE(r.datetime) + INTERVAL '3 days'
+    JOIN 
+        benchmarks b
+    ON 
+        f.playername = b.name
+    JOIN 
+        velocity_benchmarks vb
+    ON 
+        r.name = vb.name
+    WHERE 
+        f.cmjheight IS NOT NULL
+        AND r.velocity IS NOT NULL
+)
+SELECT 
+    playername,
+    COUNT(*) AS total_pairs,
+    SUM(below_jump) AS jump_below_count,
+    SUM(below_velocity) AS velocity_below_count,
+    SUM(CASE WHEN below_jump = 1 AND below_velocity = 1 THEN 1 ELSE 0 END) AS both_below_count,
+    ROUND(CAST(SUM(CASE WHEN below_jump = 1 AND below_velocity = 1 THEN 1 ELSE 0 END) AS FLOAT) / NULLIF(SUM(below_jump), 0), 2) AS both_below_rate
+FROM 
+    joined_data
+GROUP BY 
+    playername
+HAVING 
+    COUNT(*) > 50;
