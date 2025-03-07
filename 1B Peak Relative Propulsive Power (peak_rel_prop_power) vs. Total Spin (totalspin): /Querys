@@ -1,0 +1,30 @@
+Calculate Correlations 
+correlate peak_rel_prop_power (from force plate) with totalspin (from Rapsodo), and group by pitchtype to spot trends.
+
+SELECT 
+    r.pitchtype,
+    CORR(f.peak_rel_prop_power, r.totalspin) AS corr_power_spin,
+    COUNT(*) AS pair_count
+FROM 
+    force_plate_data_t f
+JOIN 
+    rapsodo_pitches_t2 r
+ON 
+    f.playername = r.name 
+    AND f.date BETWEEN DATE(r.datetime) - INTERVAL '3 days' AND DATE(r.datetime) + INTERVAL '3 days'
+WHERE 
+    f.peak_rel_prop_power IS NOT NULL 
+    AND r.totalspin IS NOT NULL
+GROUP BY 
+    r.pitchtype
+HAVING 
+    COUNT(*) > 50;
+
+pitchtype      |corr_power_spin      |pair_count|
+---------------+---------------------+----------+
+ChangeUp       |  0.30390450045856626|       662|
+Cutter         | -0.12160615792236872|       281|
+TwoSeamFastball| -0.09905621009744936|       173|
+Fastball       |-0.010651699176884561|      1501|
+CurveBall      | -0.33026651422622466|       180|
+Slider         | -0.20652689130257612|      1051|
