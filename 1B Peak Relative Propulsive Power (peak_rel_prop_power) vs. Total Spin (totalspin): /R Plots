@@ -1,0 +1,48 @@
+Bar Plot: Correlation by Pitch Type
+
+library(ggplot2)
+
+# Hardcode data (or use read.csv)
+data <- data.frame(
+  pitchtype = c("ChangeUp", "Cutter", "TwoSeamFastball", "Fastball", "CurveBall", "Slider"),
+  corr_power_spin = c(0.30390450045856626, -0.12160615792236872, -0.09905621009744936, -0.010651699176884561, -0.33026651422622466, -0.20652689130257612),
+  pair_count = c(662, 281, 173, 1501, 180, 1051)
+)
+
+# Add strength labels
+data$strength <- ifelse(abs(data$corr_power_spin) >= 0.2, "Moderate", "Weak")
+
+# Bar plot
+ggplot(data, aes(x = pitchtype, y = corr_power_spin, fill = strength)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = round(corr_power_spin, 3)), vjust = ifelse(data$corr_power_spin > 0, -0.5, 1.5), size = 3) +
+  labs(title = "Peak Propulsive Power vs. Total Spin by Pitch Type",
+       x = "Pitch Type", y = "Correlation Coefficient") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_manual(values = c("Moderate" = "#66CC99", "Weak" = "#FF9999")) +
+  guides(fill = guide_legend(title = "Correlation Strength"))
+
+ggsave("power_spin_bar.png", width = 8, height = 6)
+
+Scatter Plot: Correlation vs. Pair Count
+library(ggplot2)
+
+# Same data as above
+data <- data.frame(
+  pitchtype = c("ChangeUp", "Cutter", "TwoSeamFastball", "Fastball", "CurveBall", "Slider"),
+  corr_power_spin = c(0.30390450045856626, -0.12160615792236872, -0.09905621009744936, -0.010651699176884561, -0.33026651422622466, -0.20652689130257612),
+  pair_count = c(662, 281, 173, 1501, 180, 1051)
+)
+
+# Scatter plot
+ggplot(data, aes(x = corr_power_spin, y = pair_count, color = pitchtype, size = abs(corr_power_spin))) +
+  geom_point(alpha = 0.7) +
+  geom_text(aes(label = pitchtype), vjust = -1, size = 3) +
+  labs(title = "Peak Propulsive Power vs. Total Spin: Correlation vs. Sample Size",
+       x = "Correlation Coefficient", y = "Pair Count", size = "Correlation Strength") +
+  theme_minimal() +
+  scale_size_continuous(range = c(3, 10)) +
+  scale_color_brewer(palette = "Set1")
+
+ggsave("power_spin_scatter.png", width = 8, height = 6)
