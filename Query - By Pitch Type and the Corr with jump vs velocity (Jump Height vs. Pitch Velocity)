@@ -1,0 +1,18 @@
+SELECT 
+    r.pitchtype,
+    CORR(f.cmjheight, r.velocity) AS corr_jump_velocity,
+    COUNT(*) AS pair_count
+FROM 
+    force_plate_data_t f
+JOIN 
+    rapsodo_pitches_t2 r
+ON 
+    f.playername = r.name 
+    AND f.date BETWEEN DATE(r.datetime) - INTERVAL '3 days' AND DATE(r.datetime) + INTERVAL '3 days'
+WHERE 
+    f.cmjheight IS NOT NULL 
+    AND r.velocity IS NOT NULL
+GROUP BY 
+    r.pitchtype
+HAVING 
+    COUNT(*) > 50; -- Ensure reliable sample size
