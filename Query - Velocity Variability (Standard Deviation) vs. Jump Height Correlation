@@ -1,0 +1,30 @@
+SELECT 
+    r.pitchtype,
+    CORR(f.cmjheight, r.velocity) AS corr_jump_velocity,
+    STDDEV(r.velocity) AS velocity_stddev,
+    COUNT(*) AS pair_count
+FROM 
+    force_plate_data_t f
+JOIN 
+    rapsodo_pitches_t2 r
+ON 
+    f.playername = r.name 
+    AND f.date BETWEEN DATE(r.datetime) - INTERVAL '3 days' AND DATE(r.datetime) + INTERVAL '3 days'
+WHERE 
+    f.cmjheight IS NOT NULL 
+    AND r.velocity IS NOT NULL
+GROUP BY 
+    r.pitchtype
+HAVING 
+    COUNT(*) > 50;
+
+
+
+pitchtype      |corr_jump_velocity |velocity_stddev   |pair_count|
+---------------+-------------------+------------------+----------+
+ChangeUp       |0.09154997672894125| 4.993179408357643|       662|
+Cutter         |0.08506907028035694| 7.236978326794347|       281|
+TwoSeamFastball|0.08131744337129562| 2.297730766566963|       173|
+Fastball       |0.10702165417546604| 3.209479972128589|      1501|
+CurveBall      | 0.3017664433184818| 4.477999930413642|       180|
+Slider         | 0.2688432756733464|5.7283962555140775|      1051|
