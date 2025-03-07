@@ -1,0 +1,30 @@
+SELECT 
+    r.pitchtype,
+    CORR(f.cmjheight, r.horzbreaktraj) AS corr_jump_horzbreak,
+    CORR(f.cmjheight, r.vertbreaktraj) AS corr_jump_vertbreak,
+    COUNT(*) AS pair_count
+FROM 
+    force_plate_data_t f
+JOIN 
+    rapsodo_pitches_t2 r
+ON 
+    f.playername = r.name 
+    AND f.date BETWEEN DATE(r.datetime) - INTERVAL '3 days' AND DATE(r.datetime) + INTERVAL '3 days'
+WHERE 
+    f.cmjheight IS NOT NULL 
+    AND r.horzbreaktraj IS NOT NULL 
+    AND r.vertbreaktraj IS NOT NULL
+GROUP BY 
+    r.pitchtype
+HAVING 
+    COUNT(*) > 50;
+
+
+pitchtype      |corr_jump_horzbreak |corr_jump_vertbreak |pair_count|
+---------------+--------------------+--------------------+----------+
+ChangeUp       |  0.3184930790030431|-0.34361415086706043|       662|
+Cutter         |0.010117954918068916|-0.36041940937230016|       281|
+TwoSeamFastball|  -0.396443301155591| -0.3042967034215655|       173|
+Fastball       | 0.11816019361434789|-0.30301122011114234|      1501|
+CurveBall      |-0.24072883268570924|-0.12712245531319755|       180|
+Slider         |0.022003279879813188| 0.11836167012487643|      1051|
