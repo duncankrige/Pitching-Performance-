@@ -1,0 +1,50 @@
+SELECT r.name, r.pitchtype, CORR(f.jump_momentum, r.stuffplus) AS corr_momentum_stuff, COUNT(*) AS pair_count
+FROM force_plate_data_t f
+JOIN rapsodo_pitches_t2 r
+ON f.playername = r.name AND f.date BETWEEN DATE(r.datetime) - INTERVAL '3 days' AND DATE(r.datetime) + INTERVAL '3 days'
+WHERE f.jump_momentum IS NOT NULL AND r.stuffplus IS NOT NULL
+GROUP BY r.name, r.pitchtype
+HAVING COUNT(*) > 30;
+
+name             |pitchtype      |corr_momentum_stuff  |pair_count|
+-----------------+---------------+---------------------+----------+
+Easton Rakers    |Fastball       |  0.03632494641323749|        98|
+Carson Subbert   |Slider         |  0.24873854029508233|       102|
+Zach Buschschulte|TwoSeamFastball|   0.7027547356042759|        50|
+Eli Brown        |ChangeUp       |  0.04146779963811965|        79|
+Dillon Haftorson |Slider         |   0.3608035311393389|        31|
+Zach Buschschulte|Slider         | -0.21688054268625837|       120|
+Jackson Parrill  |Fastball       |  0.19755456914344102|        32|
+Easton Rakers    |Slider         | -0.06326806272677306|        63|
+Matt James       |Fastball       |   0.4377355206558852|       139|
+Ryan Sell        |Slider         |  0.20811226287105397|       158|
+Matt James       |ChangeUp       |  0.31571206652597383|        37|
+Josh Newell      |Slider         |-0.001988930865356721|       125|
+Matt James       |Slider         | -0.03532527672510633|        99|
+Ryan Sell        |Fastball       |  0.19229088441308134|        64|
+Bennett Stice    |Fastball       |  0.41575333521739904|        76|
+Carson Subbert   |Fastball       |  0.10302233434436923|       172|
+Eli Woodall      |Fastball       |  0.31207008716554785|        50|
+Josh Newell      |Fastball       |   0.3646458597871167|       155|
+Bennett Stice    |Cutter         | -0.02133140566125527|        38|
+Michael Walsh    |Slider         | -0.12636091584782813|        68|
+Kris Alcorn      |Fastball       |   0.5885398292715869|        60|
+Jack Fishel      |Fastball       |   0.1498982728619071|        32|
+Michael Walsh    |Fastball       |   0.3334200978081333|       146|
+Josh Newell      |ChangeUp       |  0.10702241569532829|        87|
+Ryan Sell        |ChangeUp       |  0.24526343829535274|        73|
+Michael Walsh    |Cutter         |  -0.3941445551207112|        99|
+Aaron Jungers    |Slider         |  0.24047805144596326|        99|
+Eli Brown        |Fastball       |-0.010967842206295842|        79|
+Eli Brown        |Slider         |   0.3069433098814433|        52|
+Tanner Paschke   |Fastball       |   0.6739072358357099|        34|
+Aaron Jungers    |ChangeUp       |0.0062621420134222495|        89|
+Zach Buschschulte|ChangeUp       |  -0.4778226127399884|        51|
+Ryan Sell        |Cutter         |                     |        56|
+Aaron Jungers    |Fastball       |  0.10549690501455047|       155|
+Easton Rakers    |ChangeUp       |   0.3834520546502139|       105|
+Dillon Haftorson |Fastball       |  0.01123684975243054|        52|
+Zach Buschschulte|Fastball       |  0.39902729143030474|       101|
+Ethan Smith      |Slider         |   0.4783380138099115|        34|
+Josh Newell      |Splitter       |  -0.4149173492933773|        36|
+Michael Walsh    |ChangeUp       | -0.03181285418242289|        70|
