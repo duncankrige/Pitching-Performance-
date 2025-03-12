@@ -1,0 +1,28 @@
+library(ggplot2)
+library(reshape2)
+
+# Hardcode filtered data (|corr| > 0.5 for any metric)
+data <- data.frame(
+  name = c("Bennett Stice", "Eli Tritinger", "Dillon Haftorson", "Eli Tritinger", "Eli Woodall", "Ryan Sell", "Ryan Sell", "Noah Cryns", "Jack Fishel", "Josh Newell", "Bennett Stice", "Ryan Sell", "Josh Newell", "Noah Cryns", "Bennett Stice", "Eli Tritinger", "Josh Newell", "Ryan Sell", "Eli Tritinger"),
+  pitchtype = c("TwoSeamFastball", "Slider", "Slider", "ChangeUp", "CurveBall", "CurveBall", "Fastball", "Fastball", "Fastball", "Cutter", "Cutter", "ChangeUp", "Slider", "Fastball", "TwoSeamFastball", "Fastball", "Slider", "ChangeUp", "ChangeUp"),
+  corr_asym_horzbreak = c(0.6423065938145928, 0.5677308158074228, -0.0031108003595970574, -0.8232463802955007, 0.5504733447610999, -0.5435083810302551, 0.673253804613524, -0.008593721312038997, -0.44065829192554407, -0.19642141616838055, 0.22447592540297345, 0.6924012994439965, -0.025590539971543404, -0.008593721312038997, 0.6423065938145928, -0.5955568830518253, -0.025590539971543404, 0.6924012994439965, -0.8232463802955007),
+  corr_asym_vertbreak = c(-0.6048813032472081, 0.056271328620244275, -0.595001673667295, 0.25110867678434146, 0.5189954633469289, 0.7242708966964124, 0.622856534381042, 0.7591038767714048, 0.7121025415281284, 0.2951022144589299, -0.42458743088955186, 0.2646750545103581, 0.0861230829952699, 0.7591038767714048, -0.6048813032472081, -0.031551534824658244, 0.0861230829952699, 0.2646750545103581, 0.25110867678434146),
+  corr_asym_velocity = c(-0.6711883459933803, 0.23309334894176942, -0.29040816530272706, -0.49746659911158353, 0.31690898473543655, 0.5938443928007766, -0.12426084593700729, 0.566021632120467, 0.4406853722711292, 0.5026359096501328, -0.5625127324810918, -0.03384431165749062, 0.5785665639098675, 0.566021632120467, -0.6711883459933803, 0.3641447521147756, 0.5785665639098675, -0.03384431165749062, -0.49746659911158353),
+  corr_asym_stuffplus = c(0.5165620059710608, 0.11528545915451724, -0.3040551126886086, -0.10315291069356579, -0.3384974697432883, 0.08081367648324614, 0.14614585921810558, 0.6909613194970241, 0.4129122848909613, -0.1078538392659954, 0.20988369611309585, -0.8762569156993923, 0.3823151530721323, 0.6909613194970241, 0.5165620059710608, -0.5219765283521376, 0.3823151530721323, -0.8762569156993923, -0.10315291069356579)
+)
+
+# Melt for heatmap
+melted_data <- melt(data, id.vars = c("name", "pitchtype"), variable.name = "metric", value.name = "correlation")
+
+# Faceted heatmap
+ggplot(melted_data, aes(x = pitchtype, y = name, fill = correlation)) +
+  geom_tile() +
+  geom_text(aes(label = round(correlation, 2)), color = "black", size = 2) +
+  labs(title = "Top Force Asymmetry vs. Pitch Metrics (|corr| > 0.5)",
+       x = "Pitch Type", y = "Pitcher", fill = "Correlation") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_gradient2(low = "#FF9999", mid = "#FFFFCC", high = "#66CC99", midpoint = 0) +
+  facet_wrap(~ metric, ncol = 4)
+
+ggsave("top_asym_all_metrics_heatmap.png", width = 14, height = 8)
