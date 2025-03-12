@@ -1,0 +1,24 @@
+library(ggplot2)
+library(reshape2)
+
+# Hardcode data
+data <- data.frame(
+  pitchtype = c("ChangeUp", "CurveBall", "Cutter", "Fastball", "Slider", "TwoSeamFastball"),
+  corr_asym_horzbreak = c(0.44799714903472954, -0.6586269170161133, -0.024688831119048908, 0.3366385890903214, -0.30602313417966476, 0.07001341877145957),
+  corr_asym_vertbreak = c(-0.3559212446779147, 0.1658662668095382, 0.15584473051717143, -0.008962512113348184, 0.22336860440704395, -0.7031912661446572)
+)
+
+# Melt for grouped bars
+melted_data <- melt(data, id.vars = "pitchtype", variable.name = "metric", value.name = "correlation")
+
+# Grouped bar plot
+ggplot(melted_data, aes(x = pitchtype, y = correlation, fill = metric)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(aes(label = round(correlation, 2)), position = position_dodge(width = 0.9), vjust = ifelse(melted_data$correlation > 0, -0.5, 1.5), size = 3) +
+  labs(title = "Force Asymmetry vs. Pitch Break by Pitch Type",
+       x = "Pitch Type", y = "Correlation", fill = "Metric") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_manual(values = c("#FF9999", "#66CC99"), labels = c("Horizontal Break", "Vertical Break"))
+
+ggsave("asym_break_grouped_bars.png", width = 8, height = 6)
