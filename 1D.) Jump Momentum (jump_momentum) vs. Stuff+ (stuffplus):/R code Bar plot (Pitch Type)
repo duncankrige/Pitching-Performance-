@@ -1,0 +1,25 @@
+Bar Plot 
+library(ggplot2)
+
+# Hardcode data
+data <- data.frame(
+  pitchtype = c("CurveBall", "ChangeUp", "Slider", "Fastball", "Cutter", "TwoSeamFastball"),
+  corr_momentum_stuff = c(0.22429797705603716, 0.2184198379026574, 0.13167373325346846, 0.07888607344500029, 0.044355952514227324, -0.17915579298817932),
+  pair_count = c(180, 662, 1051, 1501, 281, 173)
+)
+
+# Add strength label
+data$strength <- ifelse(abs(data$corr_momentum_stuff) >= 0.2, "Moderate", "Weak")
+
+# Bar plot
+ggplot(data, aes(x = pitchtype, y = corr_momentum_stuff, fill = strength)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = round(corr_momentum_stuff, 3)), vjust = ifelse(data$corr_momentum_stuff > 0, -0.5, 1.5), size = 3) +
+  labs(title = "Jump Momentum vs. Stuff+ Correlation by Pitch Type",
+       x = "Pitch Type", y = "Correlation Coefficient") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_manual(values = c("Moderate" = "#66CC99", "Weak" = "#FF9999")) +
+  guides(fill = guide_legend(title = "Correlation Strength"))
+
+ggsave("momentum_stuff_bar.png", width = 8, height = 6)
