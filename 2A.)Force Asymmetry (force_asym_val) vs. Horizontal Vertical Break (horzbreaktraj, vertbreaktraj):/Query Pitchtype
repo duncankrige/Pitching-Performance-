@@ -1,0 +1,33 @@
+SELECT 
+    r.pitchtype,
+    CORR(v.force_asym_val, r.horzbreaktraj) AS corr_asym_horzbreak,
+    CORR(v.force_asym_val, r.vertbreaktraj) AS corr_asym_vertbreak,
+    COUNT(*) AS pair_count
+FROM 
+    vald_t v
+JOIN 
+    rapsodo_pitches_t2 r
+ON 
+    v.name = r.name 
+    AND v.date BETWEEN DATE(r.datetime) - INTERVAL '3 days' AND DATE(r.datetime) + INTERVAL '3 days'
+WHERE 
+    v.force_asym_val IS NOT NULL 
+    AND r.horzbreaktraj IS NOT NULL 
+    AND r.vertbreaktraj IS NOT NULL
+    AND v.movement = 'External Rotation' -- Filter to shoulder ER strength
+    AND v.type = 'Strength'
+GROUP BY 
+    r.pitchtype
+HAVING 
+    COUNT(*) > 50
+ORDER BY 
+    r.pitchtype;
+
+pitchtype      |corr_asym_horzbreak  |corr_asym_vertbreak  |pair_count|
+---------------+---------------------+---------------------+----------+
+ChangeUp       |  0.44799714903472954|  -0.3559212446779147|      1699|
+CurveBall      |  -0.6586269170161133|   0.1658662668095382|       620|
+Cutter         |-0.024688831119048908|  0.15584473051717143|       732|
+Fastball       |   0.3366385890903214|-0.008962512113348184|      6827|
+Slider         | -0.30602313417966476|  0.22336860440704395|      2467|
+TwoSeamFastball|  0.07001341877145957|  -0.7031912661446572|        59|
