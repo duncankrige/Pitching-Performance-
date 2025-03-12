@@ -1,0 +1,30 @@
+SELECT 
+    r.pitchtype,
+    CORR(f.jump_momentum, r.stuffplus) AS corr_momentum_stuff,
+    COUNT(*) AS pair_count
+FROM 
+    force_plate_data_t f
+JOIN 
+    rapsodo_pitches_t2 r
+ON 
+    f.playername = r.name 
+    AND f.date BETWEEN DATE(r.datetime) - INTERVAL '3 days' AND DATE(r.datetime) + INTERVAL '3 days'
+WHERE 
+    f.jump_momentum IS NOT NULL 
+    AND r.stuffplus IS NOT NULL
+GROUP BY 
+    r.pitchtype
+HAVING 
+    COUNT(*) > 50
+ORDER BY 
+    corr_momentum_stuff DESC;
+
+
+pitchtype      |corr_momentum_stuff |pair_count|
+---------------+--------------------+----------+
+CurveBall      | 0.22429797705603716|       180|
+ChangeUp       |  0.2184198379026574|       662|
+Slider         | 0.13167373325346846|      1051|
+Fastball       | 0.07888607344500029|      1501|
+Cutter         |0.044355952514227324|       281|
+TwoSeamFastball|-0.17915579298817932|       173|
