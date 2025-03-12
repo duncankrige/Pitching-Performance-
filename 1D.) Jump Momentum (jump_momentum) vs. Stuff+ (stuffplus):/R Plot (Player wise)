@@ -1,0 +1,49 @@
+library(ggplot2)
+
+# Hardcode filtered data (|corr_momentum_stuff| > 0.3)
+data <- data.frame(
+  name = c("Zach Buschschulte", "Tanner Paschke", "Kris Alcorn", "Ethan Smith", "Matt James", "Bennett Stice", "Josh Newell", "Easton Rakers", "Dillon Haftorson", "Eli Woodall", "Michael Walsh", "Matt James", "Zach Buschschulte", "Josh Newell"),
+  pitchtype = c("TwoSeamFastball", "Fastball", "Fastball", "Slider", "Fastball", "Fastball", "Fastball", "ChangeUp", "Slider", "Fastball", "Cutter", "ChangeUp", "ChangeUp", "Splitter"),
+  corr_momentum_stuff = c(0.7027547356042759, 0.6739072358357099, 0.5885398292715869, 0.4783380138099115, 0.4377355206558852, 0.41575333521739904, 0.3646458597871167, 0.3834520546502139, 0.3608035311393389, 0.31207008716554785, -0.3941445551207112, 0.31571206652597383, -0.4778226127399884, -0.4149173492933773)
+)
+
+# Heatmap
+ggplot(data, aes(x = pitchtype, y = name, fill = corr_momentum_stuff)) +
+  geom_tile() +
+  geom_text(aes(label = round(corr_momentum_stuff, 2)), color = "black", size = 3) +
+  labs(title = "Top Jump Momentum vs. Stuff+ Correlations (|corr| > 0.3)",
+       x = "Pitch Type", y = "Pitcher", fill = "Correlation") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_gradient2(low = "#FF9999", mid = "#FFFFCC", high = "#66CC99", midpoint = 0)
+
+ggsave("top_momentum_stuff_heatmap.png", width = 8, height = 6)
+
+
+
+library(ggplot2)
+
+# Hardcode full data (replace Ryan Sell's Cutter NA with 0 or exclude if preferred)
+data <- data.frame(
+  name = c("Easton Rakers", "Carson Subbert", "Zach Buschschulte", "Eli Brown", "Dillon Haftorson", "Zach Buschschulte", "Jackson Parrill", "Easton Rakers", "Matt James", "Ryan Sell", "Matt James", "Josh Newell", "Matt James", "Ryan Sell", "Bennett Stice", "Carson Subbert", "Eli Woodall", "Josh Newell", "Bennett Stice", "Michael Walsh", "Kris Alcorn", "Jack Fishel", "Michael Walsh", "Josh Newell", "Ryan Sell", "Michael Walsh", "Aaron Jungers", "Eli Brown", "Eli Brown", "Tanner Paschke", "Aaron Jungers", "Zach Buschschulte", "Ryan Sell", "Aaron Jungers", "Easton Rakers", "Dillon Haftorson", "Zach Buschschulte", "Ethan Smith", "Josh Newell", "Michael Walsh"),
+  pitchtype = c("Fastball", "Slider", "TwoSeamFastball", "ChangeUp", "Slider", "Slider", "Fastball", "Slider", "Fastball", "Slider", "ChangeUp", "Slider", "Slider", "Fastball", "Fastball", "Fastball", "Fastball", "Fastball", "Cutter", "Slider", "Fastball", "Fastball", "Fastball", "ChangeUp", "ChangeUp", "Cutter", "Slider", "Fastball", "Slider", "Fastball", "ChangeUp", "ChangeUp", "Cutter", "Fastball", "ChangeUp", "Fastball", "Fastball", "Slider", "Splitter", "ChangeUp"),
+  corr_momentum_stuff = c(0.03632494641323749, 0.24873854029508233, 0.7027547356042759, 0.04146779963811965, 0.3608035311393389, -0.21688054268625837, 0.19755456914344102, -0.06326806272677306, 0.4377355206558852, 0.20811226287105397, 0.31571206652597383, -0.001988930865356721, -0.03532527672510633, 0.19229088441308134, 0.41575333521739904, 0.10302233434436923, 0.31207008716554785, 0.3646458597871167, -0.02133140566125527, -0.12636091584782813, 0.5885398292715869, 0.1498982728619071, 0.3334200978081333, 0.10702241569532829, 0.24526343829535274, -0.3941445551207112, 0.24047805144596326, -0.010967842206295842, 0.3069433098814433, 0.6739072358357099, 0.0062621420134222495, -0.4778226127399884, NA, 0.10549690501455047, 0.3834520546502139, 0.01123684975243054, 0.39902729143030474, 0.4783380138099115, -0.4149173492933773, -0.03181285418242289)
+)
+
+# Replace NA with 0 for plotting (or filter out with subset(data, !is.na(corr_momentum_stuff)))
+data$corr_momentum_stuff[is.na(data$corr_momentum_stuff)] <- 0
+
+# Lollipop plot
+ggplot(data, aes(x = name, y = corr_momentum_stuff, color = pitchtype)) +
+  geom_segment(aes(xend = name, yend = 0), size = 1) +
+  geom_point(size = 3) +
+  facet_wrap(~ pitchtype, scales = "free_x", ncol = 2) +
+  labs(title = "Jump Momentum vs. Stuff+ Correlations by Pitch Type",
+       x = "Pitcher", y = "Correlation") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+        legend.position = "none") +  # Hide legend since facets label pitch types
+  scale_color_brewer(palette = "Set1") +
+  coord_cartesian(ylim = c(-0.5, 0.8))  # Adjust y-limits for clarity
+
+ggsave("momentum_stuff_lollipop.png", width = 12, height = 10)
