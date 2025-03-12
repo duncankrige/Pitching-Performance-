@@ -53,4 +53,31 @@ ggsave("all_pitchers_power_spin_faceted.png", width = 12, height = 10)
 
 
 
+Grouped Bar Plot
+
+library(ggplot2)
+
+# Hardcode data (replace missing Cutter with NA)
+data <- data.frame(
+  name = c("Aaron Jungers", "Aaron Jungers", "Aaron Jungers", "Bennett Stice", "Bennett Stice", "Carson Subbert", "Carson Subbert", "Dillon Haftorson", "Dillon Haftorson", "Easton Rakers", "Easton Rakers", "Easton Rakers", "Eli Brown", "Eli Brown", "Eli Brown", "Eli Woodall", "Ethan Smith", "Jack Fishel", "Jackson Parrill", "Josh Newell", "Josh Newell", "Josh Newell", "Josh Newell", "Kris Alcorn", "Matt James", "Matt James", "Matt James", "Michael Walsh", "Michael Walsh", "Michael Walsh", "Michael Walsh", "Ryan Sell", "Ryan Sell", "Ryan Sell", "Ryan Sell", "Tanner Paschke", "Zach Buschschulte", "Zach Buschschulte", "Zach Buschschulte", "Zach Buschschulte"),
+  pitchtype = c("ChangeUp", "Fastball", "Slider", "Cutter", "Fastball", "Fastball", "Slider", "Fastball", "Slider", "ChangeUp", "Fastball", "Slider", "ChangeUp", "Fastball", "Slider", "Fastball", "Slider", "Fastball", "Fastball", "ChangeUp", "Fastball", "Slider", "Splitter", "Fastball", "ChangeUp", "Fastball", "Slider", "ChangeUp", "Cutter", "Fastball", "Slider", "ChangeUp", "Cutter", "Fastball", "Slider", "Fastball", "ChangeUp", "Fastball", "Slider", "TwoSeamFastball"),
+  corr_power_spin = c(0.33490469817119956, -0.31916402910242553, -0.41419851600356034, 0.08791390023149324, 0.5297723699544381, -0.26817908780987343, 0.2953528561096243, -0.0667709329999934, -0.6198493441737761, -0.010832332329880262, 0.19585246247634847, -0.135186711244485, -0.13387082393462937, -0.017803332695590472, -0.07306537814335602, -0.027047364698260613, 0.7810364487626645, -0.20804236904613593, 0.09646140082357738, 0.10765592112826891, -0.1347405376356012, 0.011584756249200816, -0.2198222269178187, 0.5418071758764408, -0.26119592624426663, 0.08667088183730683, 0.09389298709151422, 0.029735293900905936, -0.2992698628326919, -0.12411044234374599, -0.19900417209307725, -0.036681764586647875, NA, -0.023795138273289856, 0.43899003800097475, 0.14916962360088118, -0.055259574474262524, 0.18676945410018764, -0.05790820268549942, 0.46339483901841644)
+)
+
+# Grouped bar plot
+ggplot(data, aes(x = name, y = corr_power_spin, fill = name)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  facet_wrap(~ pitchtype, scales = "free_x", ncol = 2) +
+  geom_text(aes(label = round(corr_power_spin, 2)), vjust = ifelse(data$corr_power_spin > 0, -0.5, 1.5), size = 2.5) +
+  labs(title = "Peak Propulsive Power vs. Total Spin by Pitch Type",
+       x = "Pitcher", y = "Correlation") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 90, hjust = 1, vjust = 0.5),
+        legend.position = "none") +  # Hide legend since names are on x-axis
+  scale_fill_brewer(palette = "Paired")
+
+ggsave("all_pitchers_power_spin_grouped.png", width = 12, height = 10)
+
+
+
 
