@@ -1,0 +1,25 @@
+library(ggplot2)
+
+# Hardcode filtered data (|corr| > 0.4 for either horz or vert)
+data <- data.frame(
+  name = c("Bennett Stice", "Eli Tritinger", "Eli Brown", "Dillon Haftorson", "Eli Tritinger", "Eli Woodall", "Ryan Sell", "Matt James", "Ryan Sell", "Noah Cryns", "Jack Fishel", "Michael Walsh", "Ryan Sell", "Eli Brown", "Aaron Jungers", "Zach Buschschulte", "Ethan Smith", "Easton Rakers", "Kris Alcorn", "Bennett Stice", "Tanner Paschke", "Jackson Parrill", "Brendan Ealy"),
+  pitchtype = c("TwoSeamFastball", "Slider", "ChangeUp", "Slider", "ChangeUp", "CurveBall", "CurveBall", "Slider", "Fastball", "Fastball", "Fastball", "Fastball", "ChangeUp", "Slider", "Slider", "ChangeUp", "Slider", "ChangeUp", "Fastball", "Cutter", "CurveBall", "Fastball", "CurveBall"),
+  corr_asym_horzbreak = c(0.6423065938145928, 0.5677308158074228, 0.49831220001203774, -0.0031108003595970574, -0.8232463802955007, 0.5504733447610999, -0.5435083810302551, 0.2613317435003422, 0.673253804613524, -0.008593721312038997, -0.44065829192554407, -0.05484708243753911, 0.6924012994439965, 0.44128571505508674, 0.3269380381437201, 0.44183090545327364, 0.26320820240208337, 0.2802106222442335, -0.09661100153881556, 0.22447592540297345, 0.13458431139390767, 0.2597084054429178, -0.36218094270782936),
+  corr_asym_vertbreak = c(-0.6048813032472081, 0.056271328620244275, 0.1887037549489492, -0.595001673667295, 0.25110867678434146, 0.5189954633469289, 0.7242708966964124, -0.2341348938887155, 0.622856534381042, 0.7591038767714048, 0.7121025415281284, -0.45639327957681797, 0.2646750545103581, -0.03178150663433271, -0.3359528886210171, -0.33482868818586004, -0.11261291556506789, -0.19263817057121502, 0.1745478190460688, -0.42458743088955186, -0.37919888698026183, 0.01497371038305169, 0.02671994347314703)
+)
+
+# Melt for heatmap
+library(reshape2)
+melted_data <- melt(data, id.vars = c("name", "pitchtype"), variable.name = "metric", value.name = "correlation")
+
+# Heatmap
+ggplot(melted_data, aes(x = pitchtype, y = name, fill = correlation)) +
+  geom_tile() +
+  geom_text(aes(label = round(correlation, 2)), color = "black", size = 2.5) +
+  labs(title = "Top Force Asymmetry vs. Pitch Break Correlations (|corr| > 0.4)",
+       x = "Pitch Type", y = "Pitcher", fill = "Correlation") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_gradient2(low = "#FF9999", mid = "#FFFFCC", high = "#66CC99", midpoint = 0)
+
+ggsave("top_asym_break_heatmap.png", width = 10, height = 8)
