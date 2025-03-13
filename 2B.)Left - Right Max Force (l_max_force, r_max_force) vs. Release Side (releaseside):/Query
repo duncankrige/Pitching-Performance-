@@ -1,1 +1,35 @@
+SELECT 
+    r.pitchtype,
+    CORR(v.l_max_force, r.releaseside) AS corr_left_releaseside,
+    CORR(v.r_max_force, r.releaseside) AS corr_right_releaseside,
+    COUNT(*) AS pair_count
+FROM 
+    vald_t v
+JOIN 
+    rapsodo_pitches_t2 r
+ON 
+    v.name = r.name 
+    AND v.date BETWEEN DATE(r.datetime) - INTERVAL '3 days' AND DATE(r.datetime) + INTERVAL '3 days'
+WHERE 
+    v.l_max_force IS NOT NULL 
+    AND v.r_max_force IS NOT NULL 
+    AND r.releaseside IS NOT NULL
+    AND v.movement = 'External Rotation'
+    AND v.type = 'Strength'
+GROUP BY 
+    r.pitchtype
+HAVING 
+    COUNT(*) > 50
+ORDER BY 
+    r.pitchtype;
 
+
+pitchtype      |corr_left_releaseside|corr_right_releaseside|pair_count|
+---------------+---------------------+----------------------+----------+
+ChangeUp       |  0.09460580470281173|    0.6161292644156995|      1877|
+CurveBall      |  -0.1438020210221357|    0.6697400598497922|       708|
+Cutter         | -0.10650251857143733|    0.4191368379091303|       770|
+Fastball       |   0.0399483961025592|    0.6366841966400224|      7043|
+Slider         |  0.09446931406926203|    0.6029167074692019|      2660|
+Splitter       |   0.6773517741793694|    0.6458099481632119|        60|
+TwoSeamFastball|  -0.7820588435942247|   -0.5193159352225722|        59|
