@@ -1,0 +1,77 @@
+SELECT v.name, r.pitchtype, CORR(v.l_max_force, r.releaseside), CORR(v.r_max_force, r.releaseside), COUNT(*)
+FROM vald_t v JOIN rapsodo_pitches_t2 r ON v.name = r.name AND v.date BETWEEN DATE(r.datetime) - INTERVAL '3 days' AND DATE(r.datetime) + INTERVAL '3 days'
+WHERE v.l_max_force IS NOT NULL AND v.r_max_force IS NOT NULL AND r.releaseside IS NOT NULL AND v.movement = 'External Rotation' AND v.type = 'Strength'
+GROUP BY v.name, r.pitchtype HAVING COUNT(*) > 30;
+
+name             |pitchtype      |corr                 |corr                  |count|
+-----------------+---------------+---------------------+----------------------+-----+
+Josh Newell      |Splitter       |   0.6773517741793694|    0.6458099481632119|   60|
+Michael Walsh    |ChangeUp       |  -0.3578819574402531|    0.3045955030943835|   32|
+Brendan Ealy     |Fastball       |  0.28427796996455384|    0.2503639925558924|  140|
+Brendan Ealy     |Slider         |  0.08428960981209385|   0.23870622344267414|   69|
+Brendan Ealy     |ChangeUp       |   0.7183799494070795|    0.4434031192050136|   35|
+Easton Rakers    |Fastball       | -0.13125569602321296|   0.45794097662005123|  162|
+Bennett Stice    |TwoSeamFastball|   -0.477678397426803|  0.020202292634774268|   39|
+Carson Subbert   |Slider         | -0.07970029808846345|  -0.10337213221095513|  405|
+Bennett Stice    |Slider         |  -0.1615963757197616|    0.2745233410909692|   41|
+Kris Alcorn      |Slider         |  0.21085746673808167|    0.2873466930055299|  215|
+Eli Tritinger    |Slider         | 0.021759183345524378|-0.0010580973863055325|  117|
+Eli Woodall      |Slider         | -0.32400400573572463|  -0.33984916484128574|   58|
+Eli Brown        |ChangeUp       | -0.14020961978764626|  -0.08471641697377727|  227|
+Jack Fishel      |CurveBall      |  0.17554145735228388|    0.0759655678822173|   49|
+Jack Fishel      |ChangeUp       |   -0.335436444454698|  -0.49955764711224065|  168|
+Dillon Haftorson |Slider         |  0.19887997254177678|    0.7055993188517733|  265|
+Ethan Smith      |Cutter         | -0.06410195625862312| -0.008243255635691992|  157|
+Eli Tritinger    |ChangeUp       |-0.018482326451728787|  0.022981763566087544|   73|
+Josh Newell      |Cutter         |   0.6504748000620706|    0.6067426417489751|  132|
+Zach Buschschulte|Slider         |   0.1458471627061753|     0.202124007527497|  315|
+Eli Tritinger    |Fastball       |  0.20089675118840342|  -0.06528708405859203|  295|
+Jackson Parrill  |Fastball       | -0.22474293487993394|   -0.6128725466414753|  498|
+Easton Rakers    |Slider         |  0.19437749539864996|   0.12427691569799221|   74|
+Matt James       |Fastball       |  -0.5431644735100426|   0.34028003219848757|  339|
+Eli Brown        |CurveBall      |  0.19585882449910957|   0.26293292327835466|  105|
+Ryan Sell        |Slider         | -0.25018820830548716|   0.10642624602388805|   32|
+Eli Woodall      |CurveBall      |   0.4343708028254817|    0.3051406144571372|   66|
+Tanner Paschke   |Cutter         |   -0.050214751328905|   0.24654997544309268|   73|
+Ryan Sell        |CurveBall      |   0.6264279238842843|  -0.14638887378951776|   60|
+Jackson Parrill  |Slider         |   -0.313762978633193|  -0.37318624327429506|  100|
+Matt James       |ChangeUp       | 0.028180315596807514|  -0.10310841993652628|   78|
+Josh Newell      |Slider         |   0.5831449801806966|     0.517765827147075|  236|
+Michael Walsh    |CurveBall      |  -0.3508141716555168|   0.29414810542762243|   38|
+Matt James       |Slider         |  -0.3873315575548606|   -0.1434308360843213|   78|
+Zach Buschschulte|Cutter         |    0.608046536398085|    0.6770757040592617|   69|
+Ryan Sell        |Fastball       | 0.024626233605115105|   0.08299727542160734|  248|
+Noah Cryns       |Slider         |  0.24920203209729305|    0.2696163791946724|   67|
+Carson Subbert   |Fastball       | -0.14718386335334555|   -0.1890407640435578|  614|
+Eli Woodall      |Fastball       |  0.44043571868385206|    0.1941342345644717|  164|
+Josh Newell      |Fastball       |  0.46901198540832656|   0.39976186666143204|  545|
+Kris Alcorn      |CurveBall      |  0.33370999342058477|    0.5477259802059753|   35|
+Bennett Stice    |Cutter         | -0.10867564254167365|    0.3223763909857844|   99|
+Michael Walsh    |Slider         |   0.4220200038286404|  -0.43825167103573426|   56|
+Kris Alcorn      |Fastball       |  0.19664531866970755|    0.3328729964750753|  692|
+Jack Fishel      |Fastball       | -0.33065609015709724|   -0.8987797270145237|  145|
+Noah Cryns       |Fastball       |  0.20877571476211537|    0.2222786289267226|  159|
+Ethan Smith      |ChangeUp       | 0.005461033800361061|  -0.04741194656654538|   75|
+Michael Walsh    |Fastball       |   0.3055099986775348|  -0.31826199104411806|  128|
+Josh Newell      |ChangeUp       |  0.04551479553150307|  0.032301163097138555|  254|
+Tanner Paschke   |Slider         |  0.44062665237243503|   -0.2253110802786649|   59|
+Jack Fishel      |Slider         | -0.20364094555283635|   -0.6272629444891434|   42|
+Jackson Parrill  |ChangeUp       | -0.36822018392059247|   -0.4940256178377623|  133|
+Ryan Sell        |ChangeUp       |   0.1034762914250574|   0.18254943272837112|   58|
+Michael Walsh    |Cutter         |  0.21239250947541438|   -0.2161443976967883|  178|
+Kris Alcorn      |ChangeUp       |  0.16939208265809524|   0.20018339879101724|  118|
+Aaron Jungers    |Slider         |   0.9629982228877179|    0.9784928876165967|   60|
+Eli Brown        |Fastball       |  0.23472199806392458|    0.2563035434250925|  436|
+Eli Brown        |Slider         |  0.18586804884606467|    0.2946859845758662|  173|
+Tanner Paschke   |Fastball       |  -0.0474161990352375|    0.1613807072200919|  257|
+Aaron Jungers    |ChangeUp       |   0.8560253798103112|    0.8986859552790589|  155|
+Zach Buschschulte|ChangeUp       |   0.5315410463576205|    0.5929308367622347|   85|
+Aaron Jungers    |Fastball       |   0.9235505717087132|    0.9528268899449135|  139|
+Ethan Smith      |Fastball       | 0.006650225886785555|   0.11325195929633859|  812|
+Dillon Haftorson |ChangeUp       |   0.3071520614049614|    0.7143088347421978|   77|
+Easton Rakers    |ChangeUp       |  0.07874365625485825|   0.17190262934709188|  245|
+Dillon Haftorson |Fastball       |  0.07174046461368132|   0.33262846322184864|  594|
+Zach Buschschulte|Fastball       |  0.47609173364597906|    0.5194501823926065|  665|
+Brendan Ealy     |CurveBall      |  0.23951189066647763|    0.4081436668381883|   71|
+Ethan Smith      |Slider         | -0.02021724389039739|   0.07022345049130202|  198|
+Tanner Paschke   |CurveBall      | -0.11356371185586854|    0.2150076473892236|  221|
