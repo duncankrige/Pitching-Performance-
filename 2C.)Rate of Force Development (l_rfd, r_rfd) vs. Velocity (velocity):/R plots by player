@@ -1,0 +1,26 @@
+library(ggplot2)
+library(reshape2)
+
+# Hardcode filtered data (|corr| > 0.3)
+data <- data.frame(
+  name = c("Brendan Ealy", "Easton Rakers", "Bennett Stice", "Carson Subbert", "Dillon Haftorson", "Josh Newell", "Ryan Sell", "Eli Woodall", "Tanner Paschke", "Josh Newell", "Noah Cryns", "Kris Alcorn", "Bennett Stice", "Kris Alcorn", "Jack Fishel", "Noah Cryns", "Ethan Smith", "Ryan Sell", "Zach Buschschulte", "Dillon Haftorson", "Easton Rakers", "Aaron Jungers", "Ethan Smith", "Brendan Ealy", "Matt James", "Ryan Sell", "Eli Woodall", "Noah Cryns"),
+  pitchtype = c("Slider", "Fastball", "TwoSeamFastball", "Slider", "Slider", "Cutter", "Slider", "CurveBall", "Cutter", "Slider", "Slider", "CurveBall", "Cutter", "Fastball", "Fastball", "Fastball", "ChangeUp", "CurveBall", "Cutter", "ChangeUp", "ChangeUp", "Fastball", "Slider", "Fastball", "Fastball", "Fastball", "Fastball", "Slider"),
+  corr_left_rfd_velocity = c(-0.3716316629405949, -0.3925666461329454, -0.6585082059818629, 0.30382480914575555, 0.25342530964200294, -0.3161549544282067, 0.38344311635022, -0.5470167462474648, 0.21363569736288188, -0.32549100671052356, -0.4457374371671179, -0.6084878820197522, -0.515891116770967, -0.3954388434615033, 0.31491595867144406, -0.47658375773252004, -0.34022060862336617, -0.24421995027340995, -0.3858378724955414, 0.32315401799636057, -0.2740773286193819, -0.3438319066300525, 0.03933777713393785, 0.09331027400094141, 0.19945050211486334, 0.16129271278613103, -0.2537369562953231, -0.4457374371671179),
+  corr_right_rfd_velocity = c(0.09329828316182995, -0.11452390740352139, 0.42106003219792504, 0.060207653360195956, 0.276547134843194, -0.5093082600719935, 0.38115163822856385, -0.5775827708571353, 0.4447247180709363, -0.4090449995513858, -0.4313175763268196, 0.020448013057929766, 0.45438020596059836, 0.36753589370668516, 0.378780268552297, 0.11640810703740433, 0.3462038710795217, -0.46920372186053344, -0.18479941117049248, 0.30906966138881503, -0.06072217905858981, -0.23961947552105609, 0.33171696987083943, -0.34694048393084026, -0.1284627364935056, -0.07612327331855538, -0.3054640431833781, -0.4313175763268196)
+)
+
+# Melt for heatmap
+melted_data <- melt(data, id.vars = c("name", "pitchtype"), variable.name = "metric", value.name = "correlation")
+
+# Heatmap
+ggplot(melted_data, aes(x = pitchtype, y = name, fill = correlation)) +
+  geom_tile() +
+  geom_text(aes(label = round(correlation, 2)), color = "black", size = 2) +
+  labs(title = "Top Left/Right RFD vs. Velocity (|corr| > 0.3)",
+       x = "Pitch Type", y = "Pitcher", fill = "Correlation") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_gradient2(low = "#FF9999", mid = "#FFFFCC", high = "#66CC99", midpoint = 0) +
+  facet_wrap(~ metric, ncol = 2)
+
+ggsave("top_rfd_velocity_heatmap.png", width = 10, height = 8)
