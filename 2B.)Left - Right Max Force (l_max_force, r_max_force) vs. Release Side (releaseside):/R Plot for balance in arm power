@@ -1,0 +1,24 @@
+library(ggplot2)
+library(reshape2)
+
+# Hardcode data
+data <- data.frame(
+  pitchtype = c("ChangeUp", "CurveBall", "Cutter", "Fastball", "Slider"),
+  corr_asym_releaseside_sd = c(0.08385370735952209, 0.7360199660832136, 0.5399507633336704, 0.1021474034213865, 0.0038618926409290707),
+  corr_asym_releaseside_mean = c(0.49654513731551364, 0.48254581918614214, 0.6424974649042615, 0.5074763674023428, 0.47302203302368173)
+)
+
+# Melt for grouped bars
+melted_data <- melt(data, id.vars = "pitchtype", variable.name = "metric", value.name = "correlation")
+
+# Grouped bar plot
+ggplot(melted_data, aes(x = pitchtype, y = correlation, fill = metric)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(aes(label = round(correlation, 2)), position = position_dodge(width = 0.9), vjust = -0.5, size = 3) +
+  labs(title = "Force Asymmetry vs. Release Side Consistency and Position",
+       x = "Pitch Type", y = "Correlation", fill = "Metric") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_manual(values = c("#FF9999", "#66CC99"), labels = c("Consistency (SD)", "Position (Mean)"))
+
+ggsave("asym_releaseside_effects_bars.png", width = 8, height = 6)
