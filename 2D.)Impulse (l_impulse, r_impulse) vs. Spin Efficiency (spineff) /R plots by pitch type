@@ -1,0 +1,24 @@
+library(ggplot2)
+library(reshape2)
+
+# Hardcode data
+data <- data.frame(
+  pitchtype = c("ChangeUp", "CurveBall", "Cutter", "Fastball", "Slider", "Splitter", "TwoSeamFastball"),
+  corr_left_impulse_spineff = c(-0.029414037784832286, 0.061802875128198556, 0.12275948084187603, 0.17037017798675091, 0.018135479759863928, -0.08610415052525841, 0.634710521903338),
+  corr_right_impulse_spineff = c(0.0665987429382828, 0.11245635691853104, 0.2593159144385555, 0.18043916619784486, 0.16667684125474697, -0.06491983689636631, 0.6240344552748502)
+)
+
+# Melt for grouped bars
+melted_data <- melt(data, id.vars = "pitchtype", variable.name = "metric", value.name = "correlation")
+
+# Grouped bar plot
+ggplot(melted_data, aes(x = pitchtype, y = correlation, fill = metric)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(aes(label = round(correlation, 2)), position = position_dodge(width = 0.9), vjust = ifelse(melted_data$correlation > 0, -0.5, 1.5), size = 3) +
+  labs(title = "Left/Right Impulse vs. Spin Efficiency by Pitch Type",
+       x = "Pitch Type", y = "Correlation", fill = "Metric") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_manual(values = c("#FF9999", "#66CC99"), labels = c("Left Impulse", "Right Impulse"))
+
+ggsave("impulse_spineff_bars.png", width = 8, height = 6)
