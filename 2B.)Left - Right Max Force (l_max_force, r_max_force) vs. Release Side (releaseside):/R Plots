@@ -1,0 +1,24 @@
+library(ggplot2)
+library(reshape2)
+
+# Hardcode data
+data <- data.frame(
+  pitchtype = c("ChangeUp", "CurveBall", "Cutter", "Fastball", "Slider", "Splitter", "TwoSeamFastball"),
+  corr_left_releaseside = c(0.09460580470281173, -0.1438020210221357, -0.10650251857143733, 0.0399483961025592, 0.09446931406926203, 0.6773517741793694, -0.7820588435942247),
+  corr_right_releaseside = c(0.6161292644156995, 0.6697400598497922, 0.4191368379091303, 0.6366841966400224, 0.6029167074692019, 0.6458099481632119, -0.5193159352225722)
+)
+
+# Melt for grouped bars
+melted_data <- melt(data, id.vars = "pitchtype", variable.name = "metric", value.name = "correlation")
+
+# Grouped bar plot
+ggplot(melted_data, aes(x = pitchtype, y = correlation, fill = metric)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(aes(label = round(correlation, 2)), position = position_dodge(width = 0.9), vjust = ifelse(melted_data$correlation > 0, -0.5, 1.5), size = 3) +
+  labs(title = "Left/Right Max Force vs. Release Side by Pitch Type",
+       x = "Pitch Type", y = "Correlation", fill = "Metric") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_manual(values = c("#FF9999", "#66CC99"), labels = c("Left Max Force", "Right Max Force"))
+
+ggsave("max_force_releaseside_bars.png", width = 8, height = 6)
