@@ -1,0 +1,35 @@
+SELECT 
+    r.pitchtype,
+    CORR(v.l_impulse, r.spinefficiency) AS corr_left_impulse_spineff,
+    CORR(v.r_impulse, r.spinefficiency) AS corr_right_impulse_spineff,
+    COUNT(*) AS pair_count
+FROM 
+    vald_t v
+JOIN 
+    rapsodo_pitches_t2 r
+ON 
+    v.name = r.name 
+    AND v.date BETWEEN DATE(r.datetime) - INTERVAL '3 days' AND DATE(r.datetime) + INTERVAL '3 days'
+WHERE 
+    v.l_impulse IS NOT NULL 
+    AND v.r_impulse IS NOT NULL 
+    AND r.spinefficiency IS NOT NULL
+    AND v.movement = 'External Rotation'
+    AND v.type = 'Strength'
+GROUP BY 
+    r.pitchtype
+HAVING 
+    COUNT(*) > 50
+ORDER BY 
+    r.pitchtype;
+
+
+pitchtype      |corr_left_impulse_spineff|corr_right_impulse_spineff|pair_count|
+---------------+-------------------------+--------------------------+----------+
+ChangeUp       |    -0.029414037784832286|        0.0665987429382828|      1877|
+CurveBall      |     0.061802875128198556|       0.11245635691853104|       708|
+Cutter         |      0.12275948084187603|        0.2593159144385555|       770|
+Fastball       |      0.17037017798675091|       0.18043916619784486|      7043|
+Slider         |     0.018135479759863928|       0.16667684125474697|      2660|
+Splitter       |     -0.08610415052525841|      -0.06491983689636631|        60|
+TwoSeamFastball|        0.634710521903338|        0.6240344552748502|        59|
