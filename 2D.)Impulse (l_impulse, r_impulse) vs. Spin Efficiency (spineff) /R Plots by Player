@@ -1,0 +1,20 @@
+library(ggplot2)
+library(reshape2)
+
+# Hardcode filtered data (|corr| > 0.3)
+data <- data.frame(
+  name = c("Michael Walsh", "Bennett Stice", "Jack Fishel", "Eli Tritinger", "Jackson Parrill", "Matt James", "Tanner Paschke", "Ryan Sell", "Eli Woodall", "Kris Alcorn", "Bennett Stice", "Michael Walsh", "Jack Fishel", "Noah Cryns", "Aaron Jungers", "Eli Brown", "Tanner Paschke", "Aaron Jungers", "Zach Buschschulte", "Jack Fishel", "Matt James", "Noah Cryns", "Bennett Stice", "Eli Tritinger", "Aaron Jungers"),
+  pitchtype = c("ChangeUp", "TwoSeamFastball", "ChangeUp", "ChangeUp", "Slider", "ChangeUp", "Cutter", "CurveBall", "CurveBall", "CurveBall", "Cutter", "Slider", "Fastball", "Slider", "Slider", "Fastball", "Slider", "Fastball", "ChangeUp", "Slider", "Slider", "Fastball", "Slider", "ChangeUp", "Slider"),
+  corr_left_impulse_spineff = c(0.4140781285048827, 0.4116033118839159, 0.41079622700275575, 0.394124156375247, 0.3026713655931244, -0.5242064600667509, -0.33687476929597343, -0.315805077553911, 0.3912562286323653, 0.3958305918198183, 0.3506351632232007, 0.1423823176208092, 0.4024860233325484, 0.10232530196721784, 0.6828740560341061, -0.34703766312524065, 0.4383674369101378, -0.4730826438206386, 0.30827687231662093, 0.2192548748277382, 0.08267239815809853, 0.09422998971615201, -0.11554474119058912, 0.394124156375247, 0.6828740560341061),
+  corr_right_impulse_spineff = c(0.5385309362251062, -0.5439626065262312, 0.43554780861903725, 0.6571572811992972, 0.36975896845934436, -0.04320693330482562, -0.3014399323137526, -0.16727514058438553, 0.5328518588097505, 0.07751838622706392, -0.0698402819095626, 0.48439236042044326, 0.4328931010101534, 0.44490954455389825, 0.6453263045119197, -0.2928017899733626, 0.0777026625775718, -0.44438756989316097, -0.013601126227276149, 0.35471600404625486, 0.3356552683645327, 0.4292478454411432, -0.3592443315625658, 0.6571572811992972, 0.6453263045119197)
+)
+
+# Melt for heatmap
+melted_data <- melt(data, id.vars = c("name", "pitchtype"), variable.name = "metric", value.name = "correlation")
+
+# Heatmap
+ggplot(melted_data, aes(x = pitchtype, y = name, fill = correlation)) +
+  geom_tile() +
+  geom_text(aes(label = round(correlation, 2)), color = "black", size = 2) +
+  labs(title = "Top Left/Right Impulse vs. Spin Efficiency (|corr| > 0.3)",
+       x = "Pitch
