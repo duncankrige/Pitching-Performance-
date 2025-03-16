@@ -1,0 +1,24 @@
+library(ggplot2)
+library(reshape2)
+
+# Hardcode data
+data <- data.frame(
+  pitchtype = c("ChangeUp", "CurveBall", "Cutter", "Fastball", "Slider", "Splitter", "TwoSeamFastball"),
+  corr_left_rfd_velocity = c(0.0699096010338457, -0.37254738339555604, 0.28346010227877977, 0.15973652643403582, 0.051679108766895875, -0.05531960814888935, -0.47789073914970953),
+  corr_right_rfd_velocity = c(-0.05070659895215435, -0.09362248321042976, -0.09045162753323399, 0.060066176025849016, -0.06613125161066674, -0.1075799581327011, -0.25678114843617655)
+)
+
+# Melt for grouped bars
+melted_data <- melt(data, id.vars = "pitchtype", variable.name = "metric", value.name = "correlation")
+
+# Grouped bar plot
+ggplot(melted_data, aes(x = pitchtype, y = correlation, fill = metric)) +
+  geom_bar(stat = "identity", position = "dodge") +
+  geom_text(aes(label = round(correlation, 2)), position = position_dodge(width = 0.9), vjust = ifelse(melted_data$correlation > 0, -0.5, 1.5), size = 3) +
+  labs(title = "Left/Right RFD vs. Velocity by Pitch Type",
+       x = "Pitch Type", y = "Correlation", fill = "Metric") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_manual(values = c("#FF9999", "#66CC99"), labels = c("Left RFD", "Right RFD"))
+
+ggsave("rfd_velocity_bars.png", width = 8, height = 6)
