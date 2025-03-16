@@ -1,0 +1,47 @@
+WITH release_stats AS (
+    SELECT 
+        v.name,
+        r.pitchtype,
+        STDDEV(r.releaseside) AS releaseside_sd,
+        AVG(r.releaseside) AS releaseside_mean,
+        AVG(v.force_asym_val) AS avg_force_asym_val,
+        COUNT(*) AS pair_count
+    FROM 
+        vald_t v
+    JOIN 
+        rapsodo_pitches_t2 r
+    ON 
+        v.name = r.name 
+        AND v.date BETWEEN DATE(r.datetime) - INTERVAL '3 days' AND DATE(r.datetime) + INTERVAL '3 days'
+    WHERE 
+        v.force_asym_val IS NOT NULL 
+        AND r.releaseside IS NOT NULL
+        AND v.movement = 'External Rotation'
+        AND v.type = 'Strength'
+    GROUP BY 
+        v.name, r.pitchtype
+    HAVING 
+        COUNT(*) > 30
+)
+SELECT 
+    pitchtype,
+    CORR(avg_force_asym_val, releaseside_sd) AS corr_asym_releaseside_sd,
+    CORR(avg_force_asym_val, releaseside_mean) AS corr_asym_releaseside_mean,
+    COUNT(*) AS combo_count
+FROM 
+    release_stats
+GROUP BY 
+    pitchtype
+HAVING 
+    COUNT(*) > 5  -- At least 5 pitchers per pitch type
+ORDER BY 
+    pitchtype;
+
+
+pitchtype|corr_asym_releaseside_sd|corr_asym_releaseside_mean|combo_count|
+---------+------------------------+--------------------------+-----------+
+ChangeUp |     0.08385370735952209|       0.49654513731551364|         15|
+CurveBall|      0.7360199660832136|       0.48254581918614214|          8|
+Cutter   |      0.5399507633336704|        0.6424974649042615|          6|
+Fastball |      0.1021474034213865|        0.5074763674023428|         19|
+Slider   |   0.0038618926409290707|       0.47302203302368173|         20|
