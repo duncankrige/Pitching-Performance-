@@ -1,0 +1,35 @@
+SELECT 
+    r.pitchtype,
+    CORR(v.l_rfd, r.velocity) AS corr_left_rfd_velocity,
+    CORR(v.r_rfd, r.velocity) AS corr_right_rfd_velocity,
+    COUNT(*) AS pair_count
+FROM 
+    vald_t v
+JOIN 
+    rapsodo_pitches_t2 r
+ON 
+    v.name = r.name 
+    AND v.date BETWEEN DATE(r.datetime) - INTERVAL '3 days' AND DATE(r.datetime) + INTERVAL '3 days'
+WHERE 
+    v.l_rfd IS NOT NULL 
+    AND v.r_rfd IS NOT NULL 
+    AND r.velocity IS NOT NULL
+    AND v.movement = 'External Rotation'
+    AND v.type = 'Strength'
+GROUP BY 
+    r.pitchtype
+HAVING 
+    COUNT(*) > 50
+ORDER BY 
+    r.pitchtype;
+
+
+pitchtype      |corr_left_rfd_velocity|corr_right_rfd_velocity|pair_count|
+---------------+----------------------+-----------------------+----------+
+ChangeUp       |    0.0699096010338457|   -0.05070659895215435|      1773|
+CurveBall      |  -0.37254738339555604|   -0.09362248321042976|       708|
+Cutter         |   0.28346010227877977|   -0.09045162753323399|       760|
+Fastball       |   0.15973652643403582|   0.060066176025849016|      7043|
+Slider         |  0.051679108766895875|   -0.06613125161066674|      2631|
+Splitter       |  -0.05531960814888935|    -0.1075799581327011|        60|
+TwoSeamFastball|  -0.47789073914970953|   -0.25678114843617655|        59|
