@@ -1,0 +1,26 @@
+library(ggplot2)
+library(reshape2)
+
+# Hardcode filtered data (|corr| > 0.5 for either left or right)
+data <- data.frame(
+  name = c("Josh Newell", "Brendan Ealy", "Bennett Stice", "Dillon Haftorson", "Josh Newell", "Matt James", "Ryan Sell", "Josh Newell", "Zach Buschschulte", "Aaron Jungers", "Aaron Jungers", "Zach Buschschulte", "Dillon Haftorson", "Jack Fishel", "Jackson Parrill", "Josh Newell", "Kris Alcorn", "Aaron Jungers", "Eli Woodall", "Matt James", "Ryan Sell", "Jack Fishel", "Eli Tritinger", "Tanner Paschke"),
+  pitchtype = c("Splitter", "ChangeUp", "TwoSeamFastball", "Slider", "Cutter", "Fastball", "CurveBall", "Slider", "Cutter", "Slider", "ChangeUp", "ChangeUp", "ChangeUp", "Fastball", "Fastball", "Fastball", "CurveBall", "Fastball", "CurveBall", "Slider", "ChangeUp", "Slider", "Fastball", "CurveBall"),
+  corr_left_releaseside = c(0.6773517741793694, 0.7183799494070795, -0.477678397426803, 0.19887997254177678, 0.6504748000620706, -0.5431644735100426, 0.6264279238842843, 0.5831449801806966, 0.608046536398085, 0.9629982228877179, 0.8560253798103112, 0.5315410463576205, 0.3071520614049614, -0.33065609015709724, -0.22474293487993394, 0.46901198540832656, 0.33370999342058477, 0.9235505717087132, 0.4343708028254817, -0.3873315575548606, 0.1034762914250574, -0.20364094555283635, 0.20089675118840342, -0.11356371185586854),
+  corr_right_releaseside = c(0.6458099481632119, 0.4434031192050136, 0.020202292634774268, 0.7055993188517733, 0.6067426417489751, 0.34028003219848757, -0.14638887378951776, 0.517765827147075, 0.6770757040592617, 0.9784928876165967, 0.8986859552790589, 0.5929308367622347, 0.7143088347421978, -0.8987797270145237, -0.6128725466414753, 0.39976186666143204, 0.5477259802059753, 0.9528268899449135, 0.3051406144571372, -0.1434308360843213, 0.18254943272837112, -0.6272629444891434, -0.06528708405859203, 0.2150076473892236)
+)
+
+# Melt for heatmap
+melted_data <- melt(data, id.vars = c("name", "pitchtype"), variable.name = "metric", value.name = "correlation")
+
+# Heatmap
+ggplot(melted_data, aes(x = pitchtype, y = name, fill = correlation)) +
+  geom_tile() +
+  geom_text(aes(label = round(correlation, 2)), color = "black", size = 2) +
+  labs(title = "Top Left/Right Max Force vs. Release Side (|corr| > 0.5)",
+       x = "Pitch Type", y = "Pitcher", fill = "Correlation") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  scale_fill_gradient2(low = "#FF9999", mid = "#FFFFCC", high = "#66CC99", midpoint = 0) +
+  facet_wrap(~ metric, ncol = 2)
+
+ggsave("top_max_force_releaseside_heatmap.png", width = 10, height = 8)
