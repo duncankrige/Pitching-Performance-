@@ -1,0 +1,17 @@
+SELECT
+    CORR(f.mrsi, v.l_rfd) AS corr_mrsi_left_rfd,
+    CORR(f.mrsi, v.r_rfd) AS corr_mrsi_right_rfd,
+    COUNT(*) AS pair_count
+FROM force_plate_data_t AS f
+JOIN vald_t AS v
+    ON f.playername = v.name
+WHERE f.mrsi IS NOT NULL
+    AND v.l_rfd IS NOT NULL
+    AND v.r_rfd IS NOT NULL
+    AND v.movement = 'External Rotation'
+    AND v.type = 'Strength';
+
+
+corr_mrsi_left_rfd  |corr_mrsi_right_rfd|pair_count|
+--------------------+-------------------+----------+
+-0.39377692704722667|-0.2575679333813602|     12212|
