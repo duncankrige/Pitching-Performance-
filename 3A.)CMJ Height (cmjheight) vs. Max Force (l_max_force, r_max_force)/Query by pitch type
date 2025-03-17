@@ -1,0 +1,12 @@
+SELECT
+    CORR(f.cmjheight, v.l_max_force) AS corr_cmjheight_left_max_force,
+    CORR(f.cmjheight, v.r_max_force) AS corr_cmjheight_right_max_force,
+    COUNT(*) AS pair_count
+FROM force_plate_data_t AS f
+JOIN vald_t AS v
+    ON f.playername = v.name
+WHERE f.cmjheight IS NOT NULL
+    AND v.l_max_force IS NOT NULL
+    AND v.r_max_force IS NOT NULL
+    AND v.movement = 'External Rotation'
+    AND v.type = 'Strength';
