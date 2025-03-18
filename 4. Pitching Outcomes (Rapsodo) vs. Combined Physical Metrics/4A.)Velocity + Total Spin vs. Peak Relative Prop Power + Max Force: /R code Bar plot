@@ -1,0 +1,22 @@
+library(ggplot2)
+
+# Data frame with results
+data <- data.frame(
+  metric = c("Velocity", "Total Spin"),
+  correlation = c(0.2231, -0.1515)
+)
+
+# Bar plot
+ggplot(data, aes(x = metric, y = correlation, fill = metric)) +
+  geom_bar(stat = "identity") +
+  geom_text(aes(label = round(correlation, 2), 
+                vjust = ifelse(correlation > 0, -0.5, 1.5)), 
+            size = 4) +
+  labs(title = "Velocity & Spin vs. Power + Force", 
+       x = "Pitching Outcome", y = "Correlation") +
+  theme_minimal() +
+  scale_fill_manual(values = c("#FF9999", "#66CC99")) +
+  guides(fill = FALSE)
+
+# Save
+ggsave("velo_spin_powerforce_bars.png", width = 6, height = 4)
