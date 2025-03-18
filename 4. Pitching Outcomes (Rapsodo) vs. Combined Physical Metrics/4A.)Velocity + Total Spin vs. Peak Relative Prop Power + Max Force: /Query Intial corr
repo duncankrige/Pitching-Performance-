@@ -1,0 +1,24 @@
+We’ll join rapsodo_pitches_t2 (pitches), force_plate_data_t (power), and vald_t (strength) on player names, using a ±7-day window between tests and pitches (adjustable if sparse). 
+We’ll correlate pitchspeed and totalspin with a combined metric (peak_relative_prop_power + r_max_force)
+
+SELECT
+    ROUND(CORR(r.velocity, (f.peak_rel_prop_power + v.r_max_force))::numeric, 4) AS corr_velo_power_force,
+    ROUND(CORR(r.totalspin, (f.peak_rel_prop_power + v.r_max_force))::numeric, 4) AS corr_spin_power_force,
+    COUNT(*) AS pair_count
+FROM rapsodo_pitches_t2 AS r
+JOIN force_plate_data_t AS f
+    ON r.name = f.playername
+JOIN vald_t AS v
+    ON r.name = v.name
+WHERE r.velocity IS NOT NULL
+    AND r.totalspin IS NOT NULL
+    AND f.peak_rel_prop_power IS NOT NULL
+    AND v.r_max_force IS NOT NULL
+    AND v.movement = 'External Rotation'
+    AND v.type = 'Strength'
+HAVING COUNT(*) > 50;
+
+corr_velo_power_force | corr_spin_power_force | pair_count
+---------------------+----------------------+-----------
+0.2231              | -0.1515              | 7165723
+
